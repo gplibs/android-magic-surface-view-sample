@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:orientation="vertical"
+    tools:context="com.gplibs.magic_surface_view_sample.MainActivity">
+
+    <Button
+        android:id="@+id/btn_mac_window_anim"
+        style="@style/home_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="MacWindowAnim"/>
+
+    <Button
+        android:id="@+id/btn_wave_anim"
+        style="@style/home_button"
+        android:textAllCaps="false"
+        android:text="WaveAnim"/>
+
+    <Button
+        android:id="@+id/btn_vortex_anim"
+        style="@style/home_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="VortexAnim"/>
+
+    <Button
+        android:id="@+id/btn_matrix_anim_sample"
+        style="@style/home_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="MatrixAnimSample"/>
+
+    <Button
+        android:id="@+id/btn_light_sample"
+        style="@style/home_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="LightSample"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical|left"
+        android:text="作者主页: http://github.com/gplibs"
+        android:textColor="@color/ce"/>
+
+</LinearLayout>

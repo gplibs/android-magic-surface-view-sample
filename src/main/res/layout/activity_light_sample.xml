@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gplibs.magic_surface_view_sample.LightSampleActivity">
+
+    <com.gplibs.magicsurfaceview.MagicSurfaceView
+        android:id="@+id/surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ToggleButton
+        android:id="@+id/toggle_button"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_gravity="top|left"
+        android:text="ToggleButton"
+        android:textColor="@color/c3"
+        android:checked="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_gravity="top"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_pos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="z:0.2"/>
+        <SeekBar
+            android:id="@+id/sb_z"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:max="100"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="top"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_shininess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="shininess:128"/>
+        <SeekBar
+            android:id="@+id/sb_shininess"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:progress="128"
+            android:max="128"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:gravity="center"
+        android:text="Magic SurfaceView"
+        android:textSize="34sp"
+        android:textColor="#333"
+        android:background="@drawable/surface_bg"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@drawable/dark_bg">
+        <RadioButton
+            android:id="@+id/rb_white"
+            style="@style/radio_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="white"
+            android:textColor="#FFF"/>
+        <RadioButton
+            android:id="@+id/rb_red"
+            style="@style/radio_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="red"
+            android:textColor="#F00"/>
+        <RadioButton
+            android:id="@+id/rb_green"
+            style="@style/radio_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="green"
+            android:textColor="#0F0"/>
+        <RadioButton
+            android:id="@+id/rb_blue"
+            style="@style/radio_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="blue"
+            android:textColor="#00F"/>
+    </RadioGroup>
+
+</FrameLayout>

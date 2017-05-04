@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gplibs.magic_surface_view_sample.common.MagicActivity">
+
+    <com.gplibs.magicsurfaceview.MagicSurfaceView
+        android:id="@+id/page_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/page_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"
+        android:clipChildren="false">
+
+        <FrameLayout
+            android:id="@+id/page_title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary">
+            <TextView
+                android:id="@+id/tv_page_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:gravity="left|center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:text="Title"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_page_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/c6"
+            android:clipChildren="false">
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
