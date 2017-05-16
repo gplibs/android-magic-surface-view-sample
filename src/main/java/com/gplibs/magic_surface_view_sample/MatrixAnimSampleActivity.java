@@ -18,7 +18,6 @@ import com.gplibs.magicsurfaceview.Vec;
  */
 public class MatrixAnimSampleActivity extends MagicActivity {
 
-    private MagicScene mScene;
     private MagicSurfaceView mSurfaceView;
     private TextView mTvContent;
 
@@ -38,6 +37,12 @@ public class MatrixAnimSampleActivity extends MagicActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSurfaceView.onDestroy();
+    }
+
     private void start() {
         MatrixUpdater updater = new MatrixUpdater();
         updater.addListener(new MagicUpdaterListener() {
@@ -49,9 +54,8 @@ public class MatrixAnimSampleActivity extends MagicActivity {
             public void onStop() {
                 mTvContent.setVisibility(View.VISIBLE);
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放场景资源
-                mScene.release();
-                mScene = null;
+                // 释放资源
+                mSurfaceView.release();
             }
         });
         MagicSurface s = new MagicSurface(mTvContent)
@@ -59,7 +63,7 @@ public class MatrixAnimSampleActivity extends MagicActivity {
                 .drawGrid(false)
                 .setMatrixUpdater(updater);
         mSurfaceView.setVisibility(View.VISIBLE);
-        mScene = mSurfaceView.render(s);
+        mSurfaceView.render(s);
     }
 
     /**

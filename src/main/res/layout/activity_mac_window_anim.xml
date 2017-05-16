@@ -6,7 +6,7 @@
     android:id="@+id/view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.gplibs.magic_surface_view_sample.mac_window.MacWindowAnimActivity">
+    tools:context="com.gplibs.magic_surface_view_sample.MacWindowAnimActivity">
 
     <com.gplibs.magicsurfaceview.MagicSurfaceView
         android:id="@+id/surface_view"

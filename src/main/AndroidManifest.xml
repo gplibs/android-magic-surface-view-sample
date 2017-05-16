@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.gplibs.magic_surface_view_sample">
 
+    <!-- talking data -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -18,7 +25,7 @@
         </activity>
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".mac_window.MacWindowAnimActivity">
+        <activity android:name=".MacWindowAnimActivity">
         </activity>
         <activity android:name=".WaveAnimActivity">
         </activity>
@@ -27,6 +34,10 @@
         <activity android:name=".MatrixAnimSampleActivity">
         </activity>
         <activity android:name=".LightSampleActivity">
+        </activity>
+        <activity android:name=".MultiScrapAnimActivity">
+        </activity>
+        <activity android:name=".MultiSlideAnimActivity">
         </activity>
     </application>
 

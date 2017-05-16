@@ -32,7 +32,6 @@ public class LaunchActivity extends MagicActivity {
 
     private FloatValueAnimator mAnimator = new FloatValueAnimator(2000);
 
-    private MagicScene mScene;
     private PointLight mLight = new PointLight(0XFFFFFFFF, 0, 0, 0.1f);
     private int endAnimatorCount = 0;
 
@@ -68,9 +67,8 @@ public class LaunchActivity extends MagicActivity {
                 // 隐藏 MagicSurfaceView
                 getPageSurfaceView().setVisibility(View.GONE);
 
-                // 动画完成释放场景资源
-                mScene.release();
-                mScene = null;
+                // 动画完成释放资源
+                getPageSurfaceView().release();
             }
         }
     };
@@ -102,7 +100,7 @@ public class LaunchActivity extends MagicActivity {
                     public void run() {
                         finish();
                     }
-                }, 1500);
+                }, 2000);
             }
         });
         // 动画是个入场的过程，开始需要隐藏 (隐藏必须使用INVISIBLE 不要使用 GONE)
@@ -145,12 +143,12 @@ public class LaunchActivity extends MagicActivity {
                 .setModelUpdater(btnModelUpdater)
                 .setVisible(false);
 
-        mScene = new MagicSceneBuilder(getPageSurfaceView())
+        MagicScene scene = new MagicSceneBuilder(getPageSurfaceView())
                 .ambientColor(0XFF000000)
                 .addLights(mLight)
                 .setUpdater(sceneUpdater)
                 .addSurfaces(bgSurface, textSurface, btnSurface)
                 .build();
-        getPageSurfaceView().render(mScene);
+        getPageSurfaceView().render(scene);
     }
 }

@@ -14,7 +14,6 @@ import com.gplibs.magicsurfaceview.MagicSurfaceView;
 
 public class WaveAnimActivity extends MagicActivity {
 
-    private MagicScene mScene;
     private MagicSurfaceView mSurfaceView;
     private TextView mTvContent;
 
@@ -38,8 +37,14 @@ public class WaveAnimActivity extends MagicActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSurfaceView.onDestroy();
+    }
+
     private void show(int direction) {
-        WaveAnimUpdater updater = new WaveAnimUpdater(false, direction);
+        WaveAnimUpdater updater = new WaveAnimUpdater(false, direction, false);
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
@@ -49,9 +54,8 @@ public class WaveAnimActivity extends MagicActivity {
             public void onStop() {
                 mTvContent.setVisibility(View.VISIBLE);
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放场景资源
-                mScene.release();
-                mScene = null;
+                // 释放资源
+                mSurfaceView.release();
             }
         });
         MagicSurface s = new MagicSurface(mTvContent)
@@ -59,11 +63,11 @@ public class WaveAnimActivity extends MagicActivity {
                 .drawGrid(false)
                 .setModelUpdater(updater);
         mSurfaceView.setVisibility(View.VISIBLE);
-        mScene = mSurfaceView.render(s);
+        mSurfaceView.render(s);
     }
 
     private void hide(int direction) {
-        WaveAnimUpdater updater = new WaveAnimUpdater(true, direction);
+        WaveAnimUpdater updater = new WaveAnimUpdater(true, direction, false);
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
@@ -72,9 +76,8 @@ public class WaveAnimActivity extends MagicActivity {
             @Override
             public void onStop() {
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放场景资源
-                mScene.release();
-                mScene = null;
+                // 释放资源
+                mSurfaceView.release();
             }
         });
         MagicSurface s = new MagicSurface(mTvContent)
@@ -82,7 +85,7 @@ public class WaveAnimActivity extends MagicActivity {
                 .drawGrid(false)
                 .setModelUpdater(updater);
         mSurfaceView.setVisibility(View.VISIBLE);
-        mScene = mSurfaceView.render(s);
+        mSurfaceView.render(s);
     }
 
     private int getRowLineCount(int direction) {

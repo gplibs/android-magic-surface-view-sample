@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 import com.gplibs.magic_surface_view_sample.R;
 import com.gplibs.magic_surface_view_sample.updater.WaveAnimUpdater;
-import com.gplibs.magicsurfaceview.MagicScene;
+import com.gplibs.magicsurfaceview.MagicMultiSurface;
+import com.gplibs.magicsurfaceview.MagicMultiSurfaceUpdater;
 import com.gplibs.magicsurfaceview.MagicSurface;
 import com.gplibs.magicsurfaceview.MagicSurfaceMatrixUpdater;
 import com.gplibs.magicsurfaceview.MagicSurfaceModelUpdater;
@@ -22,8 +23,6 @@ import com.gplibs.magicsurfaceview.MagicUpdaterListener;
 
 public abstract class MagicActivity extends AppCompatActivity {
 
-    // 场景
-    private MagicScene mScene;
     // 页面可视部分的根View
     private View mPageViewContainer;
     // 用于页面转场动画的 MagicSurfaceView
@@ -49,6 +48,22 @@ public abstract class MagicActivity extends AppCompatActivity {
         if (!show()) {
             mPageViewContainer.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPageSurfaceView.onDestroy();
     }
 
     @Override
@@ -109,10 +124,19 @@ public abstract class MagicActivity extends AppCompatActivity {
      */
     protected MagicUpdater getPageUpdater(boolean isHide) {
         if (isHide) {
-            return new WaveAnimUpdater(true, Direction.RIGHT);
+            return new WaveAnimUpdater(true, Direction.RIGHT, false);
         } else {
-            return new WaveAnimUpdater(false, Direction.RIGHT);
+            return new WaveAnimUpdater(false, Direction.RIGHT, false);
         }
+    }
+
+    /**
+     * 获取页面碎片化转场动画对应的 Updater
+     * @param isHide true:离场 false:入场
+     * @return
+     */
+    protected MagicMultiSurfaceUpdater getPageMultiUpdater(boolean isHide) {
+        return null;
     }
 
     /**
@@ -144,9 +168,17 @@ public abstract class MagicActivity extends AppCompatActivity {
      */
     private boolean show() {
         MagicUpdater updater = getPageUpdater(false);
-        if (updater == null) {
-            return false;
+        if (updater != null) {
+            return showWithSurface(updater);
         }
+        MagicMultiSurfaceUpdater multiUpdater = getPageMultiUpdater(false);
+        if (multiUpdater != null) {
+            return showWithMultiSurface(multiUpdater);
+        }
+        return false;
+    }
+
+    private boolean showWithSurface(MagicUpdater updater) {
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
@@ -156,9 +188,8 @@ public abstract class MagicActivity extends AppCompatActivity {
             public void onStop() {
                 mPageViewContainer.setVisibility(View.VISIBLE);
                 mPageSurfaceView.setVisibility(View.GONE);
-                // 动画完成释放场景资源
-                mScene.release();
-                mScene = null;
+                // 动画完成释放资源
+                mPageSurfaceView.release();
                 onPageAnimEnd();
             }
         });
@@ -171,9 +202,32 @@ public abstract class MagicActivity extends AppCompatActivity {
             s.setModelUpdater((MagicSurfaceModelUpdater) updater);
         }
         mPageSurfaceView.setVisibility(View.VISIBLE);
-        mScene = mPageSurfaceView.render(s);
+        mPageSurfaceView.render(s);
         return true;
     }
+
+    private boolean showWithMultiSurface(MagicMultiSurfaceUpdater updater) {
+        updater.addListener(new MagicUpdaterListener() {
+            @Override
+            public void onStart() {
+                mPageViewContainer.setVisibility(View.INVISIBLE);
+            }
+            @Override
+            public void onStop() {
+                mPageViewContainer.setVisibility(View.VISIBLE);
+                mPageSurfaceView.setVisibility(View.GONE);
+                // 动画完成释放资源
+                mPageSurfaceView.release();
+                onPageAnimEnd();
+            }
+        });
+        final MagicMultiSurface s = new MagicMultiSurface(mPageViewContainer, pageAnimRowCount(), pageAnimColCount());
+        s.setUpdater(updater);
+        mPageSurfaceView.setVisibility(View.VISIBLE);
+        mPageSurfaceView.render(s);
+        return true;
+    }
+
 
     /**
      * 开始离场动画
@@ -181,9 +235,18 @@ public abstract class MagicActivity extends AppCompatActivity {
      */
     private boolean hide() {
         MagicUpdater updater = getPageUpdater(true);
-        if (updater == null) {
-            return false;
+        if (updater != null) {
+            return hideWithSurface(updater);
         }
+
+        MagicMultiSurfaceUpdater multiUpdater = getPageMultiUpdater(true);
+        if (multiUpdater != null) {
+            return hideWithMultiSurface(multiUpdater);
+        }
+        return false;
+    }
+
+    private boolean hideWithSurface(MagicUpdater updater) {
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
@@ -192,9 +255,8 @@ public abstract class MagicActivity extends AppCompatActivity {
             @Override
             public void onStop() {
                 mPageSurfaceView.setVisibility(View.GONE);
-                // 动画完成释放场景资源
-                mScene.release();
-                mScene = null;
+                // 动画完成释放资源
+                mPageSurfaceView.release();
                 finish();
             }
         });
@@ -207,7 +269,28 @@ public abstract class MagicActivity extends AppCompatActivity {
             s.setModelUpdater((MagicSurfaceModelUpdater) updater);
         }
         mPageSurfaceView.setVisibility(View.VISIBLE);
-        mScene = mPageSurfaceView.render(s);
+        mPageSurfaceView.render(s);
+        return true;
+    }
+
+    private boolean hideWithMultiSurface(MagicMultiSurfaceUpdater updater) {
+        updater.addListener(new MagicUpdaterListener() {
+            @Override
+            public void onStart() {
+                mPageViewContainer.setVisibility(View.INVISIBLE);
+            }
+            @Override
+            public void onStop() {
+                mPageSurfaceView.setVisibility(View.GONE);
+                // 动画完成释放资源
+                mPageSurfaceView.release();
+                finish();
+            }
+        });
+        final MagicMultiSurface s = new MagicMultiSurface(mPageViewContainer, pageAnimRowCount(), pageAnimColCount());
+        s.setUpdater(updater);
+        mPageSurfaceView.setVisibility(View.VISIBLE);
+        mPageSurfaceView.render(s);
         return true;
     }
 

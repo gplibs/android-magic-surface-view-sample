@@ -6,31 +6,30 @@ import android.widget.TextView;
 
 import com.gplibs.magic_surface_view_sample.common.Direction;
 import com.gplibs.magic_surface_view_sample.common.MagicActivity;
-import com.gplibs.magic_surface_view_sample.updater.MacWindowAnimUpdater;
-import com.gplibs.magic_surface_view_sample.updater.VortexAnimUpdater;
-import com.gplibs.magicsurfaceview.MagicScene;
-import com.gplibs.magicsurfaceview.MagicSurface;
+import com.gplibs.magic_surface_view_sample.updater.MultiSlideUpdater;
+import com.gplibs.magicsurfaceview.MagicMultiSurface;
+import com.gplibs.magicsurfaceview.MagicMultiSurfaceUpdater;
+import com.gplibs.magicsurfaceview.MagicSurfaceView;
 import com.gplibs.magicsurfaceview.MagicUpdater;
 import com.gplibs.magicsurfaceview.MagicUpdaterListener;
-import com.gplibs.magicsurfaceview.MagicSurfaceView;
 
-public class VortexAnimActivity extends MagicActivity {
+public class MultiSlideAnimActivity extends MagicActivity {
 
     private MagicSurfaceView mSurfaceView;
-    private TextView mTvContent;
+    private TextView mTvTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vortex_anim);
-        setTitle("VortexAnim");
+        setContentView(R.layout.activity_multi_slide_anim);
+        setTitle("MultiSlideAnim");
 
-        mSurfaceView = (MagicSurfaceView) findViewById(R.id.surface_view);
-        mTvContent = (TextView) findViewById(R.id.tv_content);
+        mSurfaceView = (MagicSurfaceView) findViewById(R.id.magic_surface_view);
+        mTvTest = (TextView) findViewById(R.id.tv_test);
         findViewById(R.id.view_container).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mTvContent.getVisibility() == View.VISIBLE) {
+                if (mTvTest.getVisibility() == View.VISIBLE) {
                     hide();
                 } else {
                     show();
@@ -46,63 +45,62 @@ public class VortexAnimActivity extends MagicActivity {
     }
 
     private void show() {
-        VortexAnimUpdater updater = new VortexAnimUpdater(false);
+        MultiSlideUpdater updater = new MultiSlideUpdater(false, Direction.BOTTOM);
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
-                mTvContent.setVisibility(View.INVISIBLE);
+                mTvTest.setVisibility(View.INVISIBLE);
             }
+
             @Override
             public void onStop() {
-                mTvContent.setVisibility(View.VISIBLE);
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放资源
+                mTvTest.setVisibility(View.VISIBLE);
                 mSurfaceView.release();
             }
         });
-        MagicSurface s = new MagicSurface(mTvContent)
-                .setGrid(60, 60)
-                .drawGrid(false)
-                .setModelUpdater(updater);
-        mSurfaceView.setVisibility(View.VISIBLE);
-        mSurfaceView.render(s);
+        mSurfaceView.render(new MagicMultiSurface(mTvTest, 150, 1).setUpdater(updater));
     }
 
     private void hide() {
-        VortexAnimUpdater updater = new VortexAnimUpdater(true);
+        MultiSlideUpdater updater = new MultiSlideUpdater(true, Direction.BOTTOM);
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
-                mTvContent.setVisibility(View.INVISIBLE);
+                mTvTest.setVisibility(View.INVISIBLE);
             }
+
             @Override
             public void onStop() {
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放场景资源
+                mTvTest.setVisibility(View.INVISIBLE);
                 mSurfaceView.release();
             }
         });
-        MagicSurface s = new MagicSurface(mTvContent)
-                .setGrid(60, 60)
-                .drawGrid(false)
-                .setModelUpdater(updater);
-        mSurfaceView.setVisibility(View.VISIBLE);
-        mSurfaceView.render(s);
+        mSurfaceView.render(new MagicMultiSurface(mTvTest, 150, 1).setUpdater(updater));
     }
 
-    // 设置Page转场动画
+    // 返回null禁用 单Surface转场动画
     @Override
     protected MagicUpdater getPageUpdater(boolean isHide) {
-        return new VortexAnimUpdater(isHide);
+        return null;
     }
 
+    // 启用多Surface转场动画
+    @Override
+    protected MagicMultiSurfaceUpdater getPageMultiUpdater(boolean isHide) {
+        return new MultiSlideUpdater(isHide, Direction.TOP);
+    }
+
+    // 纵向surface数量
     @Override
     protected int pageAnimRowCount() {
-        return 60;
+        return 150;
     }
 
+    // 横向surface数量
     @Override
     protected int pageAnimColCount() {
-        return 60;
+        return 1;
     }
 }

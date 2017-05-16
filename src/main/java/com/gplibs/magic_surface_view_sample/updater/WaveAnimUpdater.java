@@ -2,9 +2,9 @@ package com.gplibs.magic_surface_view_sample.updater;
 
 import com.gplibs.magic_surface_view_sample.common.Direction;
 import com.gplibs.magic_surface_view_sample.common.FloatValueAnimator;
+import com.gplibs.magic_surface_view_sample.common.AnimHelper;
 import com.gplibs.magicsurfaceview.MagicSurface;
 import com.gplibs.magicsurfaceview.MagicSurfaceModelUpdater;
-import com.gplibs.magicsurfaceview.SurfaceModel;
 import com.gplibs.magicsurfaceview.Vec;
 
 /**
@@ -21,26 +21,21 @@ public class WaveAnimUpdater extends MagicSurfaceModelUpdater {
     // 动画方向
     private int mDirection;
 
-    // 动画为显示过程时，Model中开始移动的点
-    private float mModelBeginPos;
-    // 动画横向时为Model宽度，纵向时为Model高度
-    private float mModelSize;
-    // 要移动的距离
-    private float mDistance;
-
     private FloatValueAnimator mAnimator;
-    private float mAnimValue = 0;
+    private AnimHelper mAnimHelper;
     private boolean mIsVertical;
+    private boolean mRangeOfSelf;
 
-    public WaveAnimUpdater(boolean isHide, int direction) {
+    public WaveAnimUpdater(boolean isHide, int direction, boolean rangeOfSelf) {
         mIsHide = isHide;
         mDirection = direction;
+        mRangeOfSelf = rangeOfSelf;
 
         mAnimator = new FloatValueAnimator(600);
         mAnimator.addListener(new FloatValueAnimator.FloatValueAnimatorListener() {
             @Override
             public void onAnimationUpdate(float value) {
-                mAnimValue = value;
+                mAnimHelper.update(value);
                 // 通知框架，数据改变，可以调用 update 方法进行更新
                 notifyChanged();
             }
@@ -53,50 +48,11 @@ public class WaveAnimUpdater extends MagicSurfaceModelUpdater {
         });
     }
 
-    public void setDuration(int ms) {
-        mAnimator.setDuration(ms);
-    }
-
     // 在绘制第一帧之前调用 (可以在此方法里进行一些初始化操作)
     @Override
     protected void willStart(MagicSurface surface) {
-
-        mAnimValue = mIsHide ? 0 : 1;
-
-        SurfaceModel model = surface.getModel();
+        mAnimHelper = new AnimHelper(surface, mDirection, mIsHide);
         mIsVertical = Direction.isVertical(mDirection);
-        Vec scenePos = new Vec(3);
-        Vec modelPos = new Vec(3);
-        switch (mDirection) {
-            case Direction.LEFT:
-                model.getPosition(0, model.getColLineCount() - 1, modelPos);
-                surface.getScene().getPosition(0, 0, scenePos);
-                mModelBeginPos = modelPos.x();
-                mDistance = scenePos.x() - modelPos.x();
-                mModelSize = model.getWidth();
-                break;
-            case Direction.RIGHT:
-                model.getPosition(0, 0, modelPos);
-                surface.getScene().getPosition(1, 0, scenePos);
-                mModelBeginPos = modelPos.x();
-                mDistance = scenePos.x() - modelPos.x();
-                mModelSize = model.getWidth();
-                break;
-            case Direction.TOP:
-                model.getPosition(model.getRowLineCount() - 1, 0, modelPos);
-                surface.getScene().getPosition(0, 0, scenePos);
-                mModelBeginPos = modelPos.y();
-                mDistance = scenePos.y() - modelPos.y();
-                mModelSize = model.getHeight();
-                break;
-            case Direction.BOTTOM:
-                model.getPosition(0, 0, modelPos);
-                surface.getScene().getPosition(1, 1, scenePos);
-                mModelBeginPos = modelPos.y();
-                mDistance = scenePos.y() - modelPos.y();
-                mModelSize = model.getHeight();
-                break;
-        }
     }
 
     // 在开始绘制后调用（绘制第一帧后调用，一般动画可以在此开始）
@@ -129,29 +85,16 @@ public class WaveAnimUpdater extends MagicSurfaceModelUpdater {
      */
     @Override
     protected void updatePosition(MagicSurface surface, int r, int c, Vec outPos, Vec outColor) {
-        float coord = mIsVertical ? outPos.y() : outPos.x();
-        float ratio = 1 - Math.abs((mModelBeginPos - coord) / mModelSize);
-        float startTime = (1 - MOVING_TIME) * ratio;
-        float t = mAnimValue - startTime;
-        if (t < 0) {
-            t = 0;
-        }
-        t /= MOVING_TIME;
-        if (t > 1) {
-            t = 1;
-        }
-        // t 为当前 已经移动的时间 与 总移动时间(MOVING_TIME) 的比, 范围为0~1； 进行平方是让其变化过程不是线性的，范围还是0~1。
-        t = t * t;
-        float offset = t * mDistance;
+        float startTime = mAnimHelper.getStartAnimTime(outPos, false, (1 - MOVING_TIME));
+        float offset = mAnimHelper.getMoveDistance(mRangeOfSelf ? AnimHelper.MOVE_TYPE_SELF : AnimHelper.MOVE_TYPE_SCENE, startTime, MOVING_TIME);
         if (mIsVertical) {
             outPos.y(outPos.y() + offset);
         } else {
             outPos.x(outPos.x() + offset);
         }
-        // 按水平移动距离修改 Z 坐标, 形成 PI 范围内的正弦波
-        outPos.z((float) Math.sin(Math.PI * t) / 2);
-        // 按水平移动距离修改透明度
-        outColor.a(1 - t);
+        float ratio = mAnimHelper.getAnimProgress(startTime, MOVING_TIME);
+        outPos.z((float) Math.sin(Math.PI * ratio) / 2);
+        outColor.a(1 - ratio);
     }
 
     @Override

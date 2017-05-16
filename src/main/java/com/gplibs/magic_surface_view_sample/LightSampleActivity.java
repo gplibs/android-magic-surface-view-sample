@@ -183,9 +183,8 @@ public class LightSampleActivity extends MagicActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 释放场景资源
-        mScene.release();
-        mScene = null;
+        // 释放资源
+        mSurfaceView.onDestroy();
     }
 
     @Override

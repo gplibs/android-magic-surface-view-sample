@@ -1,9 +1,12 @@
 package com.gplibs.magic_surface_view_sample.common;
 
 import android.animation.Animator;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class FloatValueAnimator implements ValueAnimator.AnimatorUpdateListener,
     private boolean mStopping = false;
     private ValueAnimator mAnimator;
     private int mDuration = 600;
+    private TimeInterpolator mInterpolator;
     private List<FloatValueAnimatorListener> mListeners = new ArrayList<>(2);
 
     public FloatValueAnimator(int duration) {
@@ -46,6 +50,10 @@ public class FloatValueAnimator implements ValueAnimator.AnimatorUpdateListener,
 
     public void setDuration(int duration) {
         mDuration = duration;
+    }
+
+    public void setInterpolator(TimeInterpolator interpolator) {
+        this.mInterpolator = interpolator;
     }
 
     @Override
@@ -99,6 +107,9 @@ public class FloatValueAnimator implements ValueAnimator.AnimatorUpdateListener,
                     mAnimator = ValueAnimator.ofFloat(1, 0);
                 } else {
                     mAnimator = ValueAnimator.ofFloat(0, 1);
+                }
+                if (mInterpolator != null) {
+                    mAnimator.setInterpolator(mInterpolator);
                 }
                 mAnimator.addUpdateListener(FloatValueAnimator.this);
                 mAnimator.addListener(FloatValueAnimator.this);

@@ -1,4 +1,4 @@
-package com.gplibs.magic_surface_view_sample.mac_window;
+package com.gplibs.magic_surface_view_sample.updater;
 
 import com.gplibs.magic_surface_view_sample.common.Direction;
 import com.gplibs.magic_surface_view_sample.common.FloatValueAnimator;
@@ -10,7 +10,7 @@ import com.gplibs.magicsurfaceview.Vec;
 /**
  * 模仿Mac窗口动画
  */
-class MacWindowAnimUpdater extends MagicSurfaceModelUpdater {
+public class MacWindowAnimUpdater extends MagicSurfaceModelUpdater {
 
     private final float MODIFY_TARGET_TOTAL_TIME = 0.1f; // 动画使用 1/10 的时间完成下端收缩或者展开。
 
@@ -29,14 +29,16 @@ class MacWindowAnimUpdater extends MagicSurfaceModelUpdater {
     private Vec mFromEnd = new Vec(3);
     private float mOffset;
     private boolean mIsVertical;
+    private boolean mRangeOfSelf = false;
     private float mMoveLengthValue;
     private float mFromSize;
 
-    MacWindowAnimUpdater(boolean isHideAnim, int direction, float target) {
+    public MacWindowAnimUpdater(boolean isHideAnim, int direction, float target, boolean rangeOfSelf) {
         super();
         mIsHideAnim = isHideAnim;
         mDirection = direction;
         mTarget = target;
+        mRangeOfSelf = rangeOfSelf;
 
         mAnimator = new FloatValueAnimator(600);
         mAnimator.addListener(new FloatValueAnimator.FloatValueAnimatorListener() {
@@ -63,22 +65,38 @@ class MacWindowAnimUpdater extends MagicSurfaceModelUpdater {
             case Direction.LEFT:
                 model.getPosition(0, model.getColLineCount() - 1, mFromBegin);
                 model.getPosition(model.getRowLineCount() - 1, model.getColLineCount() - 1, mFromEnd);
-                surface.getScene().getPosition(0, mTarget, mToCenter);
+                if (mRangeOfSelf) {
+                    surface.getPosition(0, mTarget, mToCenter);
+                } else {
+                    surface.getScene().getPosition(0, mTarget, mToCenter);
+                }
                 break;
             case Direction.RIGHT:
                 model.getPosition(0, 0, mFromBegin);
                 model.getPosition(model.getRowLineCount() - 1, 0, mFromEnd);
-                surface.getScene().getPosition(1, mTarget, mToCenter);
+                if (mRangeOfSelf) {
+                    surface.getPosition(1, mTarget, mToCenter);
+                } else {
+                    surface.getScene().getPosition(1, mTarget, mToCenter);
+                }
                 break;
             case Direction.TOP:
                 model.getPosition(model.getRowLineCount() - 1, 0, mFromBegin);
                 model.getPosition(model.getRowLineCount() - 1, model.getColLineCount() - 1, mFromEnd);
-                surface.getScene().getPosition(mTarget, 0, mToCenter);
+                if (mRangeOfSelf) {
+                    surface.getPosition(mTarget, 0, mToCenter);
+                } else {
+                    surface.getScene().getPosition(mTarget, 0, mToCenter);
+                }
                 break;
             case Direction.BOTTOM:
                 model.getPosition(0, 0, mFromBegin);
                 model.getPosition(0, model.getColLineCount() - 1, mFromEnd);
-                surface.getScene().getPosition(mTarget, 1, mToCenter);
+                if (mRangeOfSelf) {
+                    surface.getPosition(mTarget, 1, mToCenter);
+                } else {
+                    surface.getScene().getPosition(mTarget, 1, mToCenter);
+                }
                 break;
         }
 
@@ -131,8 +149,18 @@ class MacWindowAnimUpdater extends MagicSurfaceModelUpdater {
     protected void updatePosition(MagicSurface surface, int r, int c, Vec outPos, Vec outColor) {
         if (mIsVertical) {
             outPos.y(outPos.y() - mOffset);
+            float y = Math.abs(outPos.y());
+            float t = mRangeOfSelf ? surface.getHeight() / 2 : surface.getScene().getHeight() / 2;
+            if (y > t) {
+                outPos.y(mOffset > 0 ? -t : t);
+            }
         } else {
             outPos.x(outPos.x() - mOffset);
+            float x = Math.abs(outPos.x());
+            float t = mRangeOfSelf ? surface.getWidth() / 2 : surface.getScene().getWidth() / 2;
+            if (x > t) {
+                outPos.x(mOffset > 0 ? -t : t);
+            }
         }
         updatePosition(outPos, mFromBegin, mFromEnd, mToBegin, mToEnd);
     }

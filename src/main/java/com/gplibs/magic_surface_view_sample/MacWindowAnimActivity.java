@@ -1,4 +1,4 @@
-package com.gplibs.magic_surface_view_sample.mac_window;
+package com.gplibs.magic_surface_view_sample;
 
 import android.os.Bundle;
 import android.view.Gravity;
@@ -8,18 +8,18 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.gplibs.magic_surface_view_sample.R;
 import com.gplibs.magic_surface_view_sample.common.Direction;
 import com.gplibs.magic_surface_view_sample.common.MagicActivity;
+import com.gplibs.magic_surface_view_sample.updater.MacWindowAnimUpdater;
 import com.gplibs.magicsurfaceview.MagicScene;
 import com.gplibs.magicsurfaceview.MagicSceneBuilder;
 import com.gplibs.magicsurfaceview.MagicSurface;
-import com.gplibs.magicsurfaceview.MagicUpdaterListener;
 import com.gplibs.magicsurfaceview.MagicSurfaceView;
+import com.gplibs.magicsurfaceview.MagicUpdater;
+import com.gplibs.magicsurfaceview.MagicUpdaterListener;
 
 public class MacWindowAnimActivity extends MagicActivity implements View.OnTouchListener, View.OnClickListener {
 
-    private MagicScene mScene;
     private MagicSurfaceView mSurfaceView;
     private TextView mTvContent;
 
@@ -107,7 +107,7 @@ public class MacWindowAnimActivity extends MagicActivity implements View.OnTouch
     }
     
     private void hide(float center, int direction) {
-        MacWindowAnimUpdater updater = new MacWindowAnimUpdater(true, direction, center);
+        MacWindowAnimUpdater updater = new MacWindowAnimUpdater(true, direction, center, false);
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
@@ -117,23 +117,22 @@ public class MacWindowAnimActivity extends MagicActivity implements View.OnTouch
             @Override
             public void onStop() {
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放场景资源
-                mScene.release();
-                mScene = null;
+                // 释放资源
+                mSurfaceView.release();
             }
         });
         MagicSurface s = new MagicSurface(mTvContent)
                 .setGrid(getRowLineCount(direction), getColLineCount(direction))
                 .setModelUpdater(updater);
-        mScene = new MagicSceneBuilder(mSurfaceView)
+        MagicScene scene = new MagicSceneBuilder(mSurfaceView)
                 .addSurfaces(s)
                 .build();
         mSurfaceView.setVisibility(View.VISIBLE);
-        mSurfaceView.render(mScene);
+        mSurfaceView.render(scene);
     }
 
     private void show(float center, int direction) {
-        MacWindowAnimUpdater updater = new MacWindowAnimUpdater(false, direction, center);
+        MacWindowAnimUpdater updater = new MacWindowAnimUpdater(false, direction, center, false);
         updater.addListener(new MagicUpdaterListener() {
             @Override
             public void onStart() {
@@ -143,16 +142,15 @@ public class MacWindowAnimActivity extends MagicActivity implements View.OnTouch
             public void onStop() {
                 mTvContent.setVisibility(View.VISIBLE);
                 mSurfaceView.setVisibility(View.GONE);
-                // 释放场景资源
-                mScene.release();
-                mScene = null;
+                // 释放资源
+                mSurfaceView.release();
             }
         });
         MagicSurface s = new MagicSurface(mTvContent)
                 .setGrid(getRowLineCount(direction), getColLineCount(direction))
                 .setModelUpdater(updater);
         mSurfaceView.setVisibility(View.VISIBLE);
-        mScene = mSurfaceView.render(s);
+        mSurfaceView.render(s);
     }
 
     private int getRowLineCount(int direction) {
@@ -185,6 +183,13 @@ public class MacWindowAnimActivity extends MagicActivity implements View.OnTouch
             p.topMargin = (int) (value - btn.getHeight() / 2.0);
         }
         btn.setLayoutParams(p);
+    }
+
+
+    // 设置Page转场动画
+    @Override
+    protected MagicUpdater getPageUpdater(boolean isHide) {
+        return new MacWindowAnimUpdater(isHide, Direction.RIGHT, 0.184f, false);
     }
 
 }
