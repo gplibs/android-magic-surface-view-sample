@@ -8,8 +8,8 @@ android {
         applicationId "com.gplibs.magic_surface_view_sample"
         minSdkVersion 11
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 111
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -22,7 +22,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.gplibs:magic-surface-view:1.1.0'
+    compile 'com.gplibs:magic-surface-view:1.1.1'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

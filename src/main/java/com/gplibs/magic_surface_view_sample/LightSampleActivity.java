@@ -38,6 +38,9 @@ public class LightSampleActivity extends MagicActivity {
     private PointLight mPointLight;     // 点光源对象
     private Vec mLightPos = new Vec(3); // 光源位置
 
+    private boolean mIsFirstResume = true;
+    private float mX, mY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,10 +127,10 @@ public class LightSampleActivity extends MagicActivity {
 
     private void render() {
         // 光源默认位置 (0.f, 0.f, 0.2f): MagicSurfaceView 正中, Z轴向屏幕外0.2
-        mLightPos.setXYZ(0, 0, 0.2f);
+        mLightPos.setXYZ(mX, mY, 0.2f + 0.8f * mSbZ.getProgress() / 100.f);
         mPointLight = new PointLight(0XFF808080, mLightPos);
         mSurface = new MagicSurface(mTvContent);
-        mSurface.setShininess(128);
+        mSurface.setShininess(mSbShininess.getProgress());
         mSurface.setGrid(50, 50);
         mScene = new MagicSceneBuilder(mSurfaceView)
                 .addSurfaces(mSurface)
@@ -140,10 +143,10 @@ public class LightSampleActivity extends MagicActivity {
     public void moveLight(float x, float y) {
         ReusableVec sceneTopLeft = VecPool.get(3);
         mScene.getPosition(0, 0, sceneTopLeft);
-        float sceneX = sceneTopLeft.x() + mScene.getWidth() * x / mViewContainer.getWidth();
-        float sceneY = sceneTopLeft.y() - mScene.getHeight() * y / mViewContainer.getHeight(); // 场景Y轴向上所以要减
+        mX = sceneTopLeft.x() + mScene.getWidth() * x / mViewContainer.getWidth();
+        mY = sceneTopLeft.y() - mScene.getHeight() * y / mViewContainer.getHeight(); // 场景Y轴向上所以要减
         sceneTopLeft.free();
-        mLightPos.setXY(sceneX, sceneY);
+        mLightPos.setXY(mX, mY);
         updatePosition();
     }
 
@@ -177,7 +180,17 @@ public class LightSampleActivity extends MagicActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mSurfaceView.onResume();
+        getWindow().getDecorView().post(new Runnable() {
+            @Override
+            public void run() {
+                if (!mIsFirstResume) {
+                    render();
+                } else {
+                    mIsFirstResume = false;
+                }
+                mSurfaceView.onResume();
+            }
+        });
     }
 
     @Override
