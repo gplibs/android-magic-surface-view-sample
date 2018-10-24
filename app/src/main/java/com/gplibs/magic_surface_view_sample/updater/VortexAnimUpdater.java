@@ -46,8 +46,8 @@ public class VortexAnimUpdater extends MagicSurfaceModelUpdater {
     @Override
     protected void willStart(MagicSurface surface) {
         SurfaceModel model = surface.getModel();
-        Vec topLeft = new Vec(3);
-        model.getPosition(0, 0, topLeft);
+        //Vec topLeft = new Vec(3);
+        //model.getPosition(0, 0, topLeft);
         maxRadius = Math.max(
                 getRadius(model, 0, 0),
                 Math.max(
